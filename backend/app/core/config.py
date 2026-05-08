@@ -19,3 +19,11 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+
+llm_provider: str = "ollama"
+
+ollama_base_url: str = "http://host.docker.internal:11434"
+
+openai_api_key: str | None = None
+openai_model: str = "gpt-4o-mini"

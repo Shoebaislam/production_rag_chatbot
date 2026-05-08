@@ -3,6 +3,7 @@ from langchain_ollama import ChatOllama, OllamaEmbeddings
 from backend.app.core.cache import get_cache, set_cache
 from backend.app.core.config import settings
 from backend.app.rag.vectorstore import get_client, COLLECTION_NAME
+from backend.app.core.llm import get_llm
 
 
 def retrieve_context(question: str, top_k: int = 3) -> str:
@@ -39,11 +40,7 @@ def generate_answer(question: str) -> str:
 
     context = context[:1500]
 
-    llm = ChatOllama(
-        model=settings.ollama_llm_model,
-        temperature=0,
-        base_url="http://host.docker.internal:11434"
-    )
+    llm = get_llm()
 
     prompt = f"""
 You are a helpful and accurate assistant.

@@ -67,3 +67,41 @@ Answer:
     set_cache(question, answer)
 
     return answer
+
+
+
+async def stream_answer(question: str):
+
+    llm = get_llm()
+
+    context = retrieve_context(question)
+
+    if not context.strip():
+        yield "I don't know based on the provided documents."
+        return
+
+    context = context[:500]
+
+    prompt = f"""
+You are a helpful and accurate assistant.
+
+Answer ONLY from the provided context.
+
+Context:
+{context}
+
+Question:
+{question}
+
+Answer:
+"""
+
+    response = llm.invoke(prompt)
+
+    text = response.content
+
+    # 🔥 Fake token streaming for now
+    words = text.split()
+
+    for word in words:
+        yield word + " "

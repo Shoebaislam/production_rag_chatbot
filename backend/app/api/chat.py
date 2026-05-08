@@ -1,12 +1,20 @@
 from fastapi import APIRouter
-from backend.app.models.schemas import ChatRequest, ChatResponse
-from backend.app.rag.chain import generate_answer
+from fastapi.responses import StreamingResponse
+
+from backend.app.models.schemas import ChatRequest
+from backend.app.rag.chain import stream_answer
 
 router = APIRouter(prefix="/api", tags=["Chat"])
 
 
-@router.post("/chat", response_model=ChatResponse)
-def chat(request: ChatRequest):
-    answer = generate_answer(request.question)
+@router.post("/chat")
+async def chat(request: ChatRequest):
 
-    return ChatResponse(answer=answer)
+    async def event_generator():
+        async for chunk in stream_answer(request.question):
+            yield chunk
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/plain"
+    )
